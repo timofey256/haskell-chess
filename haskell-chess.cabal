@@ -11,8 +11,13 @@ cabal-version: >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Game
-                     , Behaviour.ManualMove
                      , Types
+                     , Board
+                     , Behaviours
+                     , Player
+                     , Setup
+                     , Utils
+                     , GameVisualizer
   build-depends:       base >=4.7 && <5
   default-language:    Haskell2010
 

@@ -19,11 +19,11 @@ iterateGameLoop game whiteDecideMove blackDecideMove = do
         else do
             let currentMakeMoveFunc = if playerTurn game == White then whiteDecideMove else blackDecideMove
             move <- currentMakeMoveFunc game
-            case validateMove game move of
-                Nothing     -> do
+            case isValidMove game move of
+                True     -> do
                     putStrLn "Invalid move. Try again."
                     iterateGameLoop newGame whiteDecideMove blackDecideMove
-                Just newGame -> iterateGameLoop newGame whiteDecideMove blackDecideMove
+                False -> iterateGameLoop newGame whiteDecideMove blackDecideMove
 
 main :: IO ()
 main = do

@@ -1,6 +1,7 @@
 module Behaviours where
 
 import Types
+import Data.Char (toUpper)
 
 parseMove :: String -> Maybe Move
 parseMove input =
@@ -9,7 +10,7 @@ parseMove input =
         _ -> Nothing
 
 parseSquare :: String -> Square
-parseSquare [file, rank] = Square file (read [rank])
+parseSquare [file, rank] = Square (toUpper file) (read [rank])
 parseSquare _ = error "Invalid square format"
 
 makeManualMove :: ChessGame -> IO Move
