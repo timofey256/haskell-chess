@@ -52,8 +52,10 @@ instance Game ChessGame where
         then Just (makeMove game move)
         else Nothing
 
+    -- TODO: doesn't work!
     isGameOver game =
-        isCheckmate game White || isCheckmate game Black || isStalemate game
+        False
+        --isCheckmate game White || isCheckmate game Black || isStalemate game
 
     validMoves game = 
         [Move from to promotion | 
@@ -76,17 +78,25 @@ oppositePlayer Black = White
 allSquares :: [Square]
 allSquares = [Square file rank | file <- ['A'..'H'], rank <- [1..8]]
 
-pieceAt :: ChessGame -> Square -> Maybe (Player, Piece)
-pieceAt game (Square file rank) = 
-    board game !! (rank - 1) !! (ord file - ord 'A')
-
+-- TODO: Add validation that you cannot place a piece where you have a piece already
 isValidMove :: ChessGame -> Move -> Bool
 isValidMove game (Move from to _) =
-    case pieceAt game from of
+    let
+        player1 = extractPlayerFromSquare game from
+        player2 = extractPlayerFromSquare game to
+    in case pieceAt game from of
         Nothing -> False
+
+        Just (player, Knight) ->
+            player == playerTurn game &&
+            isLegalMove game piece from to &&
+            player1 /= player2
+
         Just (player, piece) ->
             player == playerTurn game &&
-            isLegalMove game piece from to
+            isLegalMove game piece from to &&
+            player1 /= player2 &&
+            noBlockers from to
 
 makeMove :: ChessGame -> Move -> ChessGame
 makeMove game (Move from to promotion) =
@@ -175,3 +185,8 @@ isEmpty game square = pieceAt game square == Nothing
 canMoveTo :: ChessGame -> Square -> Bool
 canMoveTo game square =
     isEmpty game square || isOpponentPiece game square
+
+evaluatePosition :: ChessGame -> Int
+evaluatePosition game = 
+    -- Implement position evaluation logic
+    0  -- Placeholder implementation
