@@ -26,27 +26,26 @@ extractPlayerFromSquare game square =
     in
         extractPlayer position
 
+hasBlockers :: ChessGame -> Square -> Square -> Bool
+hasBlockers game (Square c1 r1) (Square c2 r2) =
+    let path = pathBetween (Square c1 r1) (Square c2 r2)
+    in any (isBlocked game) path
+
+pathBetween :: Square -> Square -> [Square]
+pathBetween (Square c1 r1) (Square c2 r2)
+    | c1 == c2  = [Square c1 r | r <- range r1 r2]  -- vertical move
+    | r1 == r2  = [Square c r1 | c <- range c1 c2]  -- horizontal move
+    | abs (ord c1 - ord c2) == abs (r1 - r2) = [Square c r | (c, r) <- zip (range c1 c2) (range r1 r2)]  -- diagonal move
+    | otherwise = []
+
+-- Helper function to create a range between two characters or integers
+range :: (Enum a, Ord a) => a -> a -> [a]
+range x y
+    | x < y = [(succ x)..(pred y)]
+    | otherwise = [(succ y)..(pred x)]
+
 isBlocked :: ChessGame -> Square -> Bool
-isBlocked game square = 
-    piece /= Nothing
-    where 
-        piece = pieceAt game square
-
-noBlockers' :: ChessGame -> Square -> Square -> Bool
-noBlockers' game (Square c1 r1) (Square c2 r2) =
-    if c1 == c2 then
-        [Square c1 r | r <- range r1 r2]  -- Vertical move
-    else if r1 == r2 then
-        [Square c r1 | c <- range (ord c1) (ord c2)]  -- Horizontal move
-    else if abs (ord c1 - ord c2) == abs (r1 - r2) then
-        [Square (chr c) r | (c, r) <- zip (range (ord c1) (ord c2)) (range r1 r2)]  -- Diagonal move
-    else
-        []
-    where
-        range x y
-            | x < y     = [x+1..y-1]  -- Exclude the 'from' and 'to' squares
-            | otherwise = reverse [y+1..x-1]  -- Handle reverse range
-
--- Check if there are no blockers from one square to another
-noBlockers :: Square -> Square -> Bool
-noBlockers from to = all (not . isBlocked) (noBlockers' from to)
+isBlocked game (Square c r) = 
+    case board game !! (r - 1) !! (ord c - ord 'A') of
+        Just _  -> True
+        Nothing -> False

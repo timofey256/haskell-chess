@@ -3,6 +3,7 @@ module Game where
 import Data.Maybe (Maybe)
 import Utils
 import Types
+import Debug.Trace
 
 import Data.Char (ord)
 import Data.List (find)
@@ -89,15 +90,15 @@ isValidMove game (Move from to _) =
 
         Just (player, Knight) ->
             player == playerTurn game &&
-            isLegalMove game piece from to &&
+            isLegalMove game Knight from to &&
             player1 /= player2
 
         Just (player, piece) ->
             player == playerTurn game &&
             isLegalMove game piece from to &&
             player1 /= player2 &&
-            noBlockers from to
-
+            not (hasBlockers game from to)
+            
 makeMove :: ChessGame -> Move -> ChessGame
 makeMove game (Move from to promotion) =
     ChessGame {
@@ -162,7 +163,7 @@ generateAllMoves game player =
      Just (p, piece) <- [pieceAt game from],
      p == player,
      to <- allSquares,
-     isLegalMove game piece from to,
+     isValidMove game (Move from to (Just piece)),
      promotion <- if piece == Pawn && getRank to `elem` [1, 8]
                   then [Just Queen, Just Rook, Just Bishop, Just Knight]
                   else [Nothing]]
