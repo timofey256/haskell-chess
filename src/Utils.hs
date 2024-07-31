@@ -49,3 +49,10 @@ isBlocked game (Square c r) =
     case board game !! (r - 1) !! (ord c - ord 'A') of
         Just _  -> True
         Nothing -> False
+
+switchPlayer :: Player -> Player
+switchPlayer White = Black
+switchPlayer Black = White
+
+flatten :: [[a]] -> [a]
+flatten xs = [y | x <- xs, y <- x]

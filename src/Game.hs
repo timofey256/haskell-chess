@@ -107,7 +107,6 @@ makeMove game (Move from to promotion) =
         moveHistory = Move from to promotion : moveHistory game
     }
 
--- Function to update the board after a move
 updateBoard :: [[Maybe (Player, Piece)]] -> Square -> Square -> Maybe Piece -> [[Maybe (Player, Piece)]]
 updateBoard board (Square fromFile fromRank) (Square toFile toRank) promotion =
     let fromRow = fromRank - 1
@@ -117,12 +116,10 @@ updateBoard board (Square fromFile fromRank) (Square toFile toRank) promotion =
         
         piece = board !! fromRow !! fromCol
         
-        -- Determine the updated piece at the destination square
         updatedPiece = case (piece, promotion) of
             (Just (player, Pawn), Just newPiece) | toRank `elem` [1, 8] -> Just (player, newPiece)
             _ -> piece
 
-        -- Update the board with the new positions
         updatedBoard = [[ if (r, c) == (toRow, toCol)
                             then updatedPiece
                             else if (r, c) == (fromRow, fromCol)
@@ -168,7 +165,6 @@ generateAllMoves game player =
                   then [Just Queen, Just Rook, Just Bishop, Just Knight]
                   else [Nothing]]
 
--- Add this helper function to extract the rank from a Square
 getRank :: Square -> Int
 getRank (Square _ rank) = rank
 
@@ -178,16 +174,31 @@ isOpponentPiece game square =
         Just (player, _) -> player /= playerTurn game
         Nothing -> False
 
--- Helper function to check if a square is empty
 isEmpty :: ChessGame -> Square -> Bool
 isEmpty game square = pieceAt game square == Nothing
 
--- Helper function to check if a piece can move to a square (empty or capture)
 canMoveTo :: ChessGame -> Square -> Bool
 canMoveTo game square =
     isEmpty game square || isOpponentPiece game square
 
-evaluatePosition :: ChessGame -> Int
-evaluatePosition game = 
-    -- Implement position evaluation logic
-    0  -- Placeholder implementation
+pieceValue :: Piece -> Int
+pieceValue Pawn   = 1
+pieceValue Knight = 3
+pieceValue Bishop = 3
+pieceValue Rook   = 5
+pieceValue Queen  = 9
+pieceValue King   = 9  
+
+evaluatePosition :: Player -> Maybe (Player, Piece) -> Int
+evaluatePosition currentPlayer position = 
+    case position of 
+        Just (positionPlayer, positionPiece) -> if positionPlayer == currentPlayer then pieceValue positionPiece else 0 
+        _ -> 0
+
+evaluateBoard :: ChessGame -> Player -> Int
+evaluateBoard game currentPlayer = 
+    let
+        flattenedBoard = flatten (board newGame)
+        mappedValues = map (evaluatePosition currentPlayer) flattenedBoard
+    in
+        sum mappedValues
