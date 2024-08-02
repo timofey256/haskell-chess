@@ -11,7 +11,6 @@ import Data.List (find)
 class Game g where
     newGame :: g
     validateMove :: g -> Move -> Maybe g
-    isGameOver :: g -> Bool
     validMoves :: g -> [Move]
     winner :: g -> Maybe Player
 
@@ -41,6 +40,16 @@ isInCheck game player =
         let (Move _ to _) = opponentMove
         in to == kingSquare) (generateAllMoves game (oppositePlayer player))
 
+isQueen :: Maybe (Player, Piece) -> Bool
+isQueen Nothing = False
+isQueen (Just (_, piece)) = piece == Queen
+
+isGameOver :: ChessGame -> Bool
+isGameOver game =
+    not (or (map isQueen flattenedBoard))
+    where 
+        flattenedBoard = flatten (board game) 
+
 instance Game ChessGame where
     newGame = ChessGame {
         board = initialBoard,
@@ -51,12 +60,7 @@ instance Game ChessGame where
     validateMove game move = 
         if isValidMove game move
         then Just (makeMove game move)
-        else Nothing
-
-    -- TODO: doesn't work!
-    isGameOver game =
-        False
-        --isCheckmate game White || isCheckmate game Black || isStalemate game
+        else Nothing 
 
     validMoves game = 
         [Move from to promotion | 
