@@ -8,7 +8,7 @@ import System.IO
 
 startGameLoop :: ChessGame -> IO ()
 startGameLoop game =
-    iterateGameLoop game makeManualMove makeManualMove  -- Assuming both players are manual for now
+    iterateGameLoop game makeManualMove makeAIMove  -- Assuming both players are manual for now
 
 -- Possible signature would be "ChessGame -> (ChessGame -> Move) -> (ChessGame -> Move) -> IO ()"
 -- However, if we get move from IO, we get type mismatch, because decideMove() functions have signature (ChessGame -> IO Move)
@@ -23,7 +23,9 @@ iterateGameLoop game whiteDecideMove blackDecideMove = do
                 True -> do
                     let nextStepGame = makeMove game move
                     iterateGameLoop nextStepGame whiteDecideMove blackDecideMove
-                False ->  putStrLn "\nInvalid move. Finish.\n====================\n"
+                False ->  do 
+                    putStrLn "\nInvalid move. Try again.\n====================\n"
+                    iterateGameLoop game whiteDecideMove blackDecideMove
 
 main :: IO ()
 main = do

@@ -196,9 +196,10 @@ evaluatePosition currentPlayer position =
         _ -> 0
 
 evaluateBoard :: ChessGame -> Player -> Int
-evaluateBoard game currentPlayer = 
+evaluateBoard game current = 
     let
-        flattenedBoard = flatten (board newGame)
-        mappedValues = map (evaluatePosition currentPlayer) flattenedBoard
+        opponent = switchPlayer current
+        currentScore = sum (map (evaluatePosition current) (flatten (board game)))
+        opponentScore = sum (map (evaluatePosition opponent) (flatten (board game)))
     in
-        sum mappedValues
+        currentScore-opponentScore
