@@ -32,7 +32,7 @@ makeManualMove game = do
 makeAIMove :: ChessGame -> IO Move
 makeAIMove game = do
     putStrLn $ "Current player: " ++ show (playerTurn game)
-    let depth = 2 -- should be even number!
+    let depth = 4 -- should be even number!
     let allMoves = generateAllMoves game (playerTurn game)
     let moves = filter (\x -> isValidMove game x) allMoves 
     putStrLn $ "Number of available moves: " ++ show (length moves)
@@ -43,32 +43,12 @@ makeAIMove game = do
             putStrLn $ "Selected move: " ++ show bestMove
             return bestMove
                     
--- alphabeta :: ChessGame -> Player -> Int -> Int -> Int -> Bool -> Move -> Int
--- alphabeta game currentPlayer depth alpha beta maximizingPlayer move
---     | depth == 0 || isGameOver potentialGame = evaluateBoard potentialGame currentPlayer
---     | maximizingPlayer = maximizer game potentialGame currentPlayer (depth - 1) alpha beta 
---     | otherwise = minimizer game potentialGame currentPlayer (depth - 1) alpha beta
---     where potentialGame = makeMove game move
-
 alphabeta :: ChessGame -> Player -> Int -> Int -> Int -> Bool -> Move -> Int
-alphabeta game currentPlayer depth alpha beta maximizingPlayer move =
-    trace (logState game currentPlayer depth alpha beta maximizingPlayer move result) result
-  where
-    potentialGame = makeMove game move
-    result
-      | depth == 0 || isGameOver potentialGame = evaluateBoard potentialGame currentPlayer
-      | maximizingPlayer = maximizer game potentialGame currentPlayer (depth - 1) alpha beta
-      | otherwise = minimizer game potentialGame currentPlayer (depth - 1) alpha beta
-
-    logState :: ChessGame -> Player -> Int -> Int -> Int -> Bool -> Move -> Int -> String
-    logState game player depth alpha beta maximizing move result =
-        
-      "alphabeta: depth=" ++ show depth ++
-      ", alpha=" ++ show alpha ++
-      ", beta=" ++ show beta ++
-      ", maximizingPlayer=" ++ show maximizing ++
-      ", move=" ++ show move ++
-      ", result=" ++ show result
+alphabeta game currentPlayer depth alpha beta maximizingPlayer move
+    | depth == 0 || isGameOver potentialGame = evaluateBoard potentialGame currentPlayer
+    | maximizingPlayer = maximizer game potentialGame currentPlayer (depth - 1) alpha beta 
+    | otherwise = minimizer game potentialGame currentPlayer (depth - 1) alpha beta
+    where potentialGame = makeMove game move
 
 maxLoop :: ChessGame -> Player -> Int -> Int -> Int -> Move -> Int
 maxLoop og currentPlayer d beta a m

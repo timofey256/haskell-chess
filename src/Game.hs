@@ -26,21 +26,6 @@ initialBoard = let
     in
     [whiteFirstRow] ++ [whitePawnRow] ++ emptyCells ++ [blackPawnRow] ++ [blackFirstRow]
 
-isCheckmate :: ChessGame -> Player -> Bool
-isCheckmate game player =
-    isInCheck game player && null (generateAllMoves game player)
-
-isStalemate :: ChessGame -> Bool
-isStalemate game =
-    not (isInCheck game (playerTurn game)) && null (generateAllMoves game (playerTurn game))
-
-isInCheck :: ChessGame -> Player -> Bool
-isInCheck game player =
-    let kingSquare = findKing game player
-    in any (\opponentMove -> 
-        let (Move _ to _) = opponentMove
-        in to == kingSquare) (generateAllMoves game (oppositePlayer player))
-
 instance Game ChessGame where
     newGame = ChessGame {
         board = initialBoard,
@@ -54,9 +39,12 @@ instance Game ChessGame where
         else Nothing
 
     -- TODO: doesn't work!
-    isGameOver game =
-        False
-        --isCheckmate game White || isCheckmate game Black || isStalemate game
+    isGameOver game = 
+        not (any isKing (concat (board game)))
+        where
+            isKing :: Maybe (Player, Piece) -> Bool
+            isKing (Just (_, King)) = True
+            isKing _ = False
 
     validMoves game = 
         [Move from to promotion | 
@@ -64,11 +52,6 @@ instance Game ChessGame where
          to <- allSquares, 
          promotion <- [Nothing, Just Queen, Just Rook, Just Bishop, Just Knight],
          isValidMove game (Move from to promotion)]
-
-    winner game
-        | isCheckmate game Black = Just White
-        | isCheckmate game White = Just Black
-        | otherwise = Nothing
 
 -- Helper functions
 

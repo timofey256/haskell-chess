@@ -8,7 +8,7 @@ import System.IO
 
 startGameLoop :: ChessGame -> IO ()
 startGameLoop game =
-    iterateGameLoop game makeManualMove makeAIMove  -- Assuming both players are manual for now
+    iterateGameLoop game makeAIMove makeAIMove  -- Assuming both players are manual for now
 
 -- Possible signature would be "ChessGame -> (ChessGame -> Move) -> (ChessGame -> Move) -> IO ()"
 -- However, if we get move from IO, we get type mismatch, because decideMove() functions have signature (ChessGame -> IO Move)
