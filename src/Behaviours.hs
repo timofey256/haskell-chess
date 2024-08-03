@@ -39,7 +39,7 @@ makeAIMove game = do
     case moves of
         [] -> error "No valid moves available. Game might be over."
         _  -> do
-            let bestMove = minimumBy (comparing (alphabeta game (playerTurn game) depth (-1000000) 1000000 True)) moves
+            let bestMove = minimumBy (comparing (alphabeta game (playerTurn game) depth (-1000000) 1000000 (playerTurn game == White))) moves
             putStrLn $ "Selected move: " ++ show bestMove
             return bestMove
                     

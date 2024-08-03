@@ -11,7 +11,6 @@ import Data.List (find)
 class Game g where
     newGame :: g
     validateMove :: g -> Move -> Maybe g
-    isGameOver :: g -> Bool
     validMoves :: g -> [Move]
     winner :: g -> Maybe Player
 
